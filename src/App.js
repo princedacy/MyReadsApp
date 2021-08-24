@@ -16,14 +16,18 @@ class BooksApp extends React.Component {
   };
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
-      // console.log('books', books)
       this.setState(() => ({ books }));
     });
-    // console.log('books', this.state.books)
   }
-  changeBookShelf = (book) => {
-    // this.setState((curr))
-  };
+  changeBookShelf(id, e) {
+    const shelf = e.target.value;
+    // console.log('props', this.props)
+    console.log("shelf", shelf);
+    console.log("id", id);
+    BooksAPI.update(id, shelf).then((res) => {
+      console.log("update", res);
+    });
+  }
   render() {
     const currentlyReading = this.state.books.filter(
       (book) => book.shelf === "currentlyReading"
