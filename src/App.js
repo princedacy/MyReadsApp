@@ -1,33 +1,53 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
-import BookShelf from "./BookShelf";
+import BookShelf from "./components/BookShelf";
 import "./App.css";
 
 class BooksApp extends React.Component {
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
     showSearchPage: false,
     books: [],
   };
+  /**
+   * @description This is a lifecycle that will be invoked whenever the component mounts
+   * it will executes the function that fetches all books from an API
+   */
   componentDidMount() {
+    this.fetchBooks();
+  }
+  /**
+   * @description This function fetches all books from API
+   */
+  fetchBooks = () => {
     BooksAPI.getAll().then((books) => {
       this.setState(() => ({ books }));
     });
-  }
-  changeBookShelf(id, e) {
-    const shelf = e.target.value;
-    // console.log('props', this.props)
-    console.log("shelf", shelf);
-    console.log("id", id);
-    BooksAPI.update(id, shelf).then((res) => {
-      console.log("update", res);
+  };
+  /**
+   * @description This function updates the book shelves with the update API
+   * @param {object} book Book to update
+   * @param {string} shelf Shelf to update to
+   * @returns returns a function to change the state of the book shelf
+   */
+  changeBookShelf = (book, shelf) => {
+    if (shelf !== "none") {
+      BooksAPI.update(book, shelf);
+      return this.changeBookState(book, shelf);
+    }
+  };
+  /**
+   *
+   * @returns returns a function that sets the state
+   */
+  changeBookState = (book, shelf) => {
+    const { books } = this.state;
+    const booksState = books.filter((b) => {
+      return b.id !== book.id;
     });
-  }
+    book.shelf = shelf;
+    booksState.push(book);
+    return this.setState({ books: booksState });
+  };
   render() {
     const currentlyReading = this.state.books.filter(
       (book) => book.shelf === "currentlyReading"
@@ -36,7 +56,6 @@ class BooksApp extends React.Component {
       (book) => book.shelf === "wantToRead"
     );
     const read = this.state.books.filter((book) => book.shelf === "read");
-    console.log("books", this.state.books);
     return (
       <div className="app">
         {this.state.showSearchPage ? (
