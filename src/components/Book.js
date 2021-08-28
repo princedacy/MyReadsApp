@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 class Book extends Component {
+  _isMounted = false;
   static propTypes = {
     bookInfo: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
   };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
   render() {
     const { bookInfo, onChange } = this.props;
     return (
@@ -16,12 +20,16 @@ class Book extends Component {
               style={{
                 width: 128,
                 height: 193,
-                backgroundImage: `url(${bookInfo.imageLinks ? bookInfo.imageLinks.smallThumbnail : bookInfo.imageLinks.previewLink})`
+                backgroundImage: `url(${
+                  bookInfo.imageLinks
+                    ? bookInfo.imageLinks.smallThumbnail
+                    : bookInfo.previewLink
+                })`,
               }}
             />
             <div className="book-shelf-changer">
               <select
-                value={bookInfo.shelf}
+                value={bookInfo.shelf ? bookInfo.shelf : "none"}
                 onChange={(e) => onChange(bookInfo, e.target.value)}
               >
                 <option value="move" disabled>
@@ -36,7 +44,10 @@ class Book extends Component {
           </div>
           <div className="book-title">{bookInfo.title}</div>
           <div className="book-authors">
-          {bookInfo.authors && bookInfo.authors.map((author, index) => (<span key={index}>{author}</span>))}
+            {bookInfo.authors &&
+              bookInfo.authors.map((author, index) => (
+                <span key={index}>{author}</span>
+              ))}
           </div>
         </div>
       </li>

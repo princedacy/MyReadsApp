@@ -7,6 +7,7 @@ class SearchBook extends Component {
   static propTypes = {
     searchBook: PropTypes.func.isRequired,
     searchResults: PropTypes.array.isRequired,
+    onChangeBookShelf: PropTypes.func
   };
   state = {
     searchText: "",
@@ -17,8 +18,9 @@ class SearchBook extends Component {
       searchText: query,
     });
   };
+  
   render() {
-    const { searchBook, searchResults } = this.props;
+    const { searchBook, searchResults, onChangeBookShelf } = this.props;
     const { searchText } = this.state;
     return (
       <div className="search-books">
@@ -30,6 +32,7 @@ class SearchBook extends Component {
             <input
               type="text"
               placeholder="Search by title or author"
+              value={searchText}
               onChange={(e) => {
                 this.handleInput(e.target.value);
                 searchBook(searchText);
@@ -39,13 +42,12 @@ class SearchBook extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {console.log('results', searchResults)}
-            {searchResults.length > 0 && searchText ? (
+            {searchResults.length && searchText ? (
               searchResults.map((book) => (
-                <Book bookInfo={book} key={book.id} onChange="" />
+                <Book bookInfo={book} key={book.id} onChange={onChangeBookShelf} />
               ))
             ) : (
-              <h1>No results</h1>
+              <h1>No results to show.</h1>
             )}
           </ol>
         </div>

@@ -58,9 +58,28 @@ class BooksApp extends React.Component {
    * @param {string} query
    */
   searchBook = (query) => {
-    BooksAPI.search(query).then((searchResults) => {
-      return this.setState({ searchResults });
+    BooksAPI.search(query).then((res) => {
+      const { books } = this.state;
+      Array.isArray(res)
+        ? this.setState({ searchResults: this.mergeBooks(res, books) })
+        : this.clearSearchResult();
     });
+  };
+  /**
+   *
+   * @description this function merges searchRsults and books array
+   * @param {Array} searchResults searchResults is the returned array from the searchBook API function
+   * @param {Array} books books is the returned array from the fetchBook API function
+   * @returns
+   */
+  mergeBooks = (searchResults, books) => {
+    return searchResults.map((res) => {
+      const found = books.find((book) => book.id === res.id);
+      return found ? found : res;
+    });
+  };
+  clearSearchResult = () => {
+    return this.setState({ searchResults: [] });
   };
   render() {
     const currentlyReading = this.state.books.filter(
@@ -71,7 +90,6 @@ class BooksApp extends React.Component {
     );
     const read = this.state.books.filter((book) => book.shelf === "read");
     const searchResults = this.state.searchResults;
-    console.log('search', this.state.searchResults)
     return (
       <div className="app">
         <Route
@@ -118,6 +136,7 @@ class BooksApp extends React.Component {
             <SearchBook
               searchBook={this.searchBook}
               searchResults={searchResults}
+              onChangeBookShelf={this.changeBookShelf}
             />
           )}
         />
