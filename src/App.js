@@ -78,6 +78,9 @@ class BooksApp extends React.Component {
       return found ? found : res;
     });
   };
+  /**
+   * @description This fucntion clears the searchResults when the users goes back to the homepage 
+   */
   clearSearchResult = () => {
     return this.setState({ searchResults: [] });
   };
